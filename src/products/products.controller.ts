@@ -9,7 +9,7 @@ import { toArray} from 'rxjs/operators'
 
 interface ProductsService {
     FindOne(data: ProductById): Observable<Product>;
-    FindAll(): Observable<Product>;
+    FindAll();
     // Delete(data: ProductById);
     // Update(data: Product): Observable<Product>;
     // Create(data: Product): Observable<Product>;
@@ -39,14 +39,12 @@ export class ProductsController implements OnModuleInit {
 
     @Get()
     getAll(): Observable<Product[]> {
-        // return this.productsService.FindAll();
-        const stream = this.productsService.FindAll();
-        return stream.pipe(toArray());
+        return this.productsService.FindAll();
     }   
 
     @GrpcMethod('ProductsService')
-    async FindAll() {
-        const users = await this.productsRepository.findAll();
-        return users;
+    async FindAll(): Promise<Product[]> {
+        const products: Product[] = await this.productsRepository.findAll();
+        return products;
     }
 }
