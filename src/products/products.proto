@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package products;
+
+service ProductsService {
+    rpc FindOne (ProductById) returns (Product);
+    rpc FindAll (stream ProductById) returns (stream Product);
+    rpc Delete (ProductById) returns (Empty);
+    rpc Update (Product) returns (Product);
+    rpc Create (Product) returns (Product);
+}
+// returns (google.protobuf.Empty)
+message Empty {}
+
+message ProductById {
+    int64 id = 1;
+}
+
+message Product {
+    int64 id = 1;
+    string name = 2;
+    int64 cost = 3;
+}
