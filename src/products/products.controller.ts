@@ -3,11 +3,13 @@ import { ClientGrpc, GrpcMethod } from '@nestjs/microservices';
 import { Observable} from 'rxjs'
 import { ProductById } from './interfaces/product-by-id.interface'
 import { Product } from './interfaces/product.interface'
-
+import { InjectModel} from '@nestjs/sequelize';
+import { ProductModel } from './product.model';
+import { toArray} from 'rxjs/operators'
 
 interface ProductsService {
     FindOne(data: ProductById): Observable<Product>;
-    // FindAll(upstream: Observable<ProductById>): Observable<Product>;
+    FindAll(): Observable<Product>;
     // Delete(data: ProductById);
     // Update(data: Product): Observable<Product>;
     // Create(data: Product): Observable<Product>;
@@ -17,22 +19,34 @@ interface ProductsService {
 export class ProductsController implements OnModuleInit {
     private productsService: ProductsService;
 
-    constructor (@Inject('PRODUCTS_PACKAGE') private readonly client: ClientGrpc) {}
+    constructor (@Inject('PRODUCTS_PACKAGE') private readonly client: ClientGrpc,
+    @InjectModel(ProductModel) private productsRepository: typeof ProductModel) {}
 
     onModuleInit() {
         this.productsService = this.client.getService<ProductsService>('ProductsService');
     }
 
     @Get(':id')
-    getById(@Param('id') id: string): Observable<Product> {
-        return this.productsService.FindOne({id: +id});
+    getById(@Param('id') id: number): Observable<Product> {
+        return this.productsService.FindOne({id: id});
     }
 
     @GrpcMethod('ProductsService')
-    findOne(data: ProductById): Product {
-        // Change!!
-        let Product = {"id": 1, "name": 'sdad', "cost": 22};
-        return Product;
+    async FindOne(data: ProductById): Promise<Product> {
+        const user: Product = await this.productsRepository.findOne({where: {id: data.id}});
+        return user;
     }
 
+    @Get()
+    getAll(): Observable<Product[]> {
+        // return this.productsService.FindAll();
+        const stream = this.productsService.FindAll();
+        return stream.pipe(toArray());
+    }   
+
+    @GrpcMethod('ProductsService')
+    async FindAll() {
+        const users = await this.productsRepository.findAll();
+        return users;
+    }
 }

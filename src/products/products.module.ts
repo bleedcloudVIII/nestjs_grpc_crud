@@ -1,9 +1,10 @@
 import { Module } from "@nestjs/common";
 import { ClientsModule } from "@nestjs/microservices";
-import { grpcClientOptions } from "src/grpc-client.options";
-import { ClientOptions, Transport} from '@nestjs/microservices';
+import { Transport} from '@nestjs/microservices';
 import { join } from 'path';
 import { ProductsController } from "./products.controller";
+import { SequelizeModule} from '@nestjs/sequelize';
+import { ProductModel } from "./product.model";
 
 @Module({
     imports: [
@@ -17,6 +18,7 @@ import { ProductsController } from "./products.controller";
                 },
             },
         ]),
+        SequelizeModule.forFeature([ProductModel])
     ],
     controllers: [ ProductsController],
 })

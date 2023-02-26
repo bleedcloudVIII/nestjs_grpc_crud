@@ -4,16 +4,21 @@ package products;
 
 service ProductsService {
     rpc FindOne (ProductById) returns (Product);
-    rpc FindAll (stream ProductById) returns (stream Product);
+    rpc FindAll (Empty) returns (stream Product);
     rpc Delete (ProductById) returns (Empty);
-    rpc Update (Product) returns (Product);
-    rpc Create (Product) returns (Product);
+    rpc Update (ProductWithoutId) returns (Product);
+    rpc Create (ProductWithoutId) returns (Product);
 }
 // returns (google.protobuf.Empty)
 message Empty {}
 
 message ProductById {
     int64 id = 1;
+}
+
+message ProductWithoutId {
+    string name = 1;
+    int64 cost = 2;
 }
 
 message Product {
