@@ -9,11 +9,11 @@ import { toArray} from 'rxjs/operators'
 import { ProductWithoutId } from './interfaces/product-without-id.interface';
 
 interface ProductsService {
-    FindOne(data: ProductById): Observable<Product>;
-    FindAll();
+    FindOne(data: ProductById): Product;
+    FindAll(): Product[];
     Delete(data: ProductById);
-    Update(data: Product): Observable<Product>;
-    Create(data: ProductWithoutId): Observable<Product>;
+    Update(data: Product): Product;
+    Create(data: ProductWithoutId): Product;
 }
 
 @Controller('products')
@@ -28,7 +28,7 @@ export class ProductsController implements OnModuleInit {
     }
 
     @Get(':id')
-    getById(@Param('id') id: number): Observable<Product> {
+    getById(@Param('id') id: number): Product {
         return this.productsService.FindOne({id: id});
     }
 
@@ -44,7 +44,7 @@ export class ProductsController implements OnModuleInit {
     }
 
     @Get()
-    getAll(): Observable<Product[]> {
+    getAll(): Product[] {
         return this.productsService.FindAll();
     }   
 
@@ -55,7 +55,7 @@ export class ProductsController implements OnModuleInit {
     }
 
     @Post()
-    create(@Body() data: ProductWithoutId): Observable<Product> {
+    create(@Body() data: ProductWithoutId): Product {
         return this.productsService.Create(data);
     }
 
@@ -77,14 +77,20 @@ export class ProductsController implements OnModuleInit {
     }
 
     @Put()
-    update(@Body() data: Product): Observable<Product> {
+    update(@Body() data: Product): Product {
         return this.productsService.Update(data);
     }
 
     @GrpcMethod('ProductsService', 'Update')
-    async Update(data: Product): Promise<Product> {
-        await this.productsRepository.update({...data}, {where: {id: data.id}});
+    async Update(data: Product): Promise<Product | {}> {
         const user = await this.productsRepository.findOne({where: {id: data.id}});
-        return user;
+        if (user == null) {
+            return {};
+        }
+        else {
+            await this.productsRepository.update({...data}, {where: {id: data.id}});
+            const newUser = await this.productsRepository.findOne({where: {id: data.id}});
+            return newUser;
+        }
     }
 }
