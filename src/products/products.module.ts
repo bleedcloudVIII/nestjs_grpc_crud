@@ -14,7 +14,7 @@ import { ProductModel } from "./product.model";
                 transport: Transport.GRPC,
                 options: {
                     package: 'products',
-                    protoPath: join(__dirname, 'products.proto'),
+                    protoPath: join(__dirname, '../../src/products/products.proto'), // Exit from dist dir
                 },
             },
         ]),

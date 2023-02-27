@@ -6,11 +6,12 @@ service ProductsService {
     rpc FindOne (ProductById) returns (Product);
     rpc FindAll (Empty) returns (stream Product);
     rpc Delete (ProductById) returns (Empty);
-    rpc Update (ProductWithoutId) returns (Product);
+    rpc Update (Product) returns (Product);
     rpc Create (ProductWithoutId) returns (Product);
 }
 // returns (google.protobuf.Empty)
 message Empty {}
+
 
 message ProductById {
     int64 id = 1;
