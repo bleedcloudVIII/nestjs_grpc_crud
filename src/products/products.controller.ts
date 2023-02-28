@@ -7,13 +7,14 @@ import { InjectModel} from '@nestjs/sequelize';
 import { ProductModel } from './product.model';
 import { toArray} from 'rxjs/operators'
 import { ProductWithoutId } from './interfaces/product-without-id.interface';
+import { AllProducts } from './interfaces/all-products.interface';
 
 interface ProductsService {
-    FindOne(data: ProductById): Product;
-    FindAll(): Product[];
+    FindOne(data: ProductById): Observable<Product>;
+    FindAll({}): Observable<Product[]>;
     Delete(data: ProductById);
-    Update(data: Product): Product;
-    Create(data: ProductWithoutId): Product;
+    Update(data: Product): Observable<Product>;
+    Create(data: ProductWithoutId): Observable<Product>;
 }
 
 @Controller('products')
@@ -28,7 +29,7 @@ export class ProductsController implements OnModuleInit {
     }
 
     @Get(':id')
-    getById(@Param('id') id: number): Product {
+    getById(@Param('id') id: number): Observable<Product> {
         return this.productsService.FindOne({id: id});
     }
 
@@ -44,18 +45,18 @@ export class ProductsController implements OnModuleInit {
     }
 
     @Get()
-    getAll(): Product[] {
-        return this.productsService.FindAll();
+    getAll(): Observable<Product[] | AllProducts> {
+        return this.productsService.FindAll({});
     }   
 
     @GrpcMethod('ProductsService', 'FindAll')
-    async FindAll(): Promise<Product[]> {
-        const products: Product[] = await this.productsRepository.findAll();
-        return products;
+    async FindAll(): Promise<AllProducts> {
+        const products = await this.productsRepository.findAll();
+        return { products };
     }
 
     @Post()
-    create(@Body() data: ProductWithoutId): Product {
+    create(@Body() data: ProductWithoutId): Observable<Product> {
         return this.productsService.Create(data);
     }
 
@@ -77,7 +78,7 @@ export class ProductsController implements OnModuleInit {
     }
 
     @Put()
-    update(@Body() data: Product): Product {
+    update(@Body() data: Product): Observable<Product> {
         return this.productsService.Update(data);
     }
 

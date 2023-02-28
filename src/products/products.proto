@@ -1,10 +1,11 @@
 syntax = "proto3";
+// import "google/protobuf/empty.proto";
 
 package products;
 
 service ProductsService {
     rpc FindOne (ProductById) returns (Product);
-    rpc FindAll (Empty) returns (stream Product);
+    rpc FindAll (Empty) returns (AllProducts);
     rpc Delete (ProductById) returns (Empty);
     rpc Update (Product) returns (Product);
     rpc Create (ProductWithoutId) returns (Product);
@@ -12,6 +13,9 @@ service ProductsService {
 // returns (google.protobuf.Empty)
 message Empty {}
 
+message AllProducts {
+    repeated Product products = 1;
+}
 
 message ProductById {
     int64 id = 1;
