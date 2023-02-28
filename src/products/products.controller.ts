@@ -11,7 +11,7 @@ import { AllProducts } from './interfaces/all-products.interface';
 
 interface ProductsService {
     FindOne(data: ProductById): Observable<Product>;
-    FindAll({}): Observable<Product[]>;
+    FindAll({}): Observable<AllProducts>;
     Delete(data: ProductById);
     Update(data: Product): Observable<Product>;
     Create(data: ProductWithoutId): Observable<Product>;
@@ -45,13 +45,13 @@ export class ProductsController implements OnModuleInit {
     }
 
     @Get()
-    getAll(): Observable<Product[] | AllProducts> {
+    getAll(): Observable<AllProducts> {
         return this.productsService.FindAll({});
     }   
 
     @GrpcMethod('ProductsService', 'FindAll')
     async FindAll(): Promise<AllProducts> {
-        const products = await this.productsRepository.findAll();
+        const products: Product[] = await this.productsRepository.findAll();
         return { products };
     }
 
