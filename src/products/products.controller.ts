@@ -5,7 +5,6 @@ import { ProductById } from './interfaces/product-by-id.interface'
 import { Product } from './interfaces/product.interface'
 import { InjectModel} from '@nestjs/sequelize';
 import { ProductModel } from './product.model';
-import { toArray} from 'rxjs/operators'
 import { ProductWithoutId } from './interfaces/product-without-id.interface';
 import { AllProducts } from './interfaces/all-products.interface';
 
